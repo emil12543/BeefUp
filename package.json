@@ -1,0 +1,17 @@
+{
+  "name": "restaurants",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "boom": "^4.2.0",
+    "hapi": "^16.0.1",
+    "joi": "^10.0.5",
+    "mongoose": "^4.7.2"
+  }
+}
