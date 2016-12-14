@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const Boom = require('boom');
-const User = require('mongoose').model('User');
+const User = require('../models/user');
 
 exports.getAll = {
     handler: (request, reply) => {
