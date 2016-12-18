@@ -60,23 +60,30 @@ exports.remove = {
 exports.login = {
     auth: false,
     handler: function(request, reply) {
-        const token = auth.sign(request.params.id);
-        redis.addItem(token, request.params.id);
-        return reply({token: token});
+        auth.sign(request.params.id, (err, token) => {
+            if (err)
+                return reply(Boom.badRequest('JWT Error: ' + err.message));
+
+            redis.addItem(token, request.params.id);
+            return reply({token: token});
+        });
     }
 };
 
 exports.revokeToken = {
     auth: 'jwt',
     handler: function(request, reply) {
-        const token = auth.verify(request.payload.token);
+        auth.verify(request.payload.token, (err, token) => {
+            if (err)
+                return reply(Boom.badRequest('JWT Error: ' + err.message));
 
-        if (token.id === request.auth.credentials.id) {
-            redis.deleteItem(request.payload.token);
-            return reply({
-                message: 'Success!'
-            });
-        } else
-            return reply(Boom.unauthorized('You are not authorized to revoke this token!'));
+            if (token.id === request.auth.credentials.id) {
+                redis.deleteItem(request.payload.token);
+                return reply({
+                    message: 'Success!'
+                });
+            } else
+                return reply(Boom.unauthorized('You are not authorized to revoke this token!'));
+        });
     }
 };

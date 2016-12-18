@@ -1,9 +1,24 @@
 const jwt = require('jsonwebtoken');
 const secret = require('../config/config').secret;
 
-exports.sign = id => jwt.sign({
-    id,
-    date: new Date()
-}, secret);
+exports.sign = (id, callback) => {
+    jwt.sign({
+        id,
+        date: new Date()
+    }, secret, {
+        algorithm: 'HS256'
+    }, (err, token) => {
+        if (err)
+            return callback(err);
 
-exports.verify = token => jwt.verify(token, secret);
+        return callback(null, token);
+    });
+};
+
+exports.verify = (token, callback) => {
+    jwt.verify(token, secret, (err, decoded) => {
+        if (err)
+            return callback(err);
+        return callback(null, decoded);
+    });
+};

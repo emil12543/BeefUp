@@ -1,6 +1,7 @@
-const Hapi = require('hapi');
+require('dotenv').config();
 const config = require('./config/config');
 
+const Hapi = require('hapi');
 const server = new Hapi.Server();
 
 server.connection({ port: 3000 });
