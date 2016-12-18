@@ -20,6 +20,16 @@ const routes = [
         path: '/users/{id}',
         method: 'DELETE',
         config: userController.remove
+    },
+    {
+        path: '/users/login/{id}',
+        method: 'GET',
+        config: userController.login
+    },
+    {
+        path: '/users/revoke',
+        method: 'POST',
+        config: userController.revokeToken
     }
 ];
 

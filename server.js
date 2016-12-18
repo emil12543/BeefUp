@@ -1,14 +1,20 @@
-const env = process.env.NODE_ENV || 'development';
-
 const Hapi = require('hapi');
-const config = require('./config/config')[env];
+const config = require('./config/config');
+
+const server = new Hapi.Server();
+
+server.connection({ port: 3000 });
 
 require('./config/mongoose')(config);
 
-const server = new Hapi.Server();
-server.connection({ port: 3000 });
+server.register(require('hapi-auth-jwt2'), err => {
+    if (err)
+        throw err;
 
-server.route(require('./routes'));
+    server.auth.strategy('jwt', 'jwt', true, require('./config/jwt'));
+
+    server.route(require('./routes'));
+});
 
 server.start(err => {
 
