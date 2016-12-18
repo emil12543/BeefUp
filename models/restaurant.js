@@ -57,7 +57,10 @@ const RestaurantSchema = new Schema({
                 }
             }
         }]
-    }]
+    }],
+    typeMeals: {
+        type: [String]
+    }
 });
 
 const Restaurant = mongoose.model('Restaurant', RestaurantSchema);
