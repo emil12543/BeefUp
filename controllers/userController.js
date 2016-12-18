@@ -62,7 +62,7 @@ exports.login = {
     handler: function(request, reply) {
         auth.sign(request.params.id, (err, token) => {
             if (err)
-                return reply(Boom.badRequest('JWT Error: ' + err.message));
+                return reply(Boom.badImplementation(err));
 
             redis.addItem(token, request.params.id);
             return reply({token: token});
@@ -74,8 +74,14 @@ exports.revokeToken = {
     auth: 'jwt',
     handler: function(request, reply) {
         auth.verify(request.payload.token, (err, token) => {
+
             if (err)
-                return reply(Boom.badRequest('JWT Error: ' + err.message));
+                switch (err.message) {
+                    case 'jwt malformed':
+                        return reply(Boom.badRequest('Invalid token'));
+                    default:
+                        return reply(Boom.badImplementation(err));
+                }
 
             if (token.id === request.auth.credentials.id) {
                 redis.deleteItem(request.payload.token);
