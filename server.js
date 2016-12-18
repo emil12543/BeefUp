@@ -8,7 +8,15 @@ server.connection({ port: 3000 });
 
 require('./config/mongoose')(config);
 
-server.register(require('hapi-auth-jwt2'), err => {
+server.register([
+    {
+        register: require('good'),
+        options: require('./config/good')
+    },
+    {
+        register: require('hapi-auth-jwt2')
+    }
+],  err => {
     if (err)
         throw err;
 
@@ -18,7 +26,6 @@ server.register(require('hapi-auth-jwt2'), err => {
 });
 
 server.start(err => {
-
     if (err)
         throw err;
 

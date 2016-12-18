@@ -18,7 +18,7 @@ const ItemSchema = new Schema({
         type: Boolean, // liquid or meal
         required: true
     },
-    category: {
+    type: {
         type: String // predefined in restaurant.typesMeals
     },
     weight: {
