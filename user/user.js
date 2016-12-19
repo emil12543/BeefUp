@@ -43,11 +43,11 @@ const UserSchema = new Schema({
         required: true
     },
     role: {
-        type: String, // normal, waiter, barman, waiter, owner
+        type: String, // normal, waiter, barman, cook, owner
         default: 'normal'
     },
     restaurant_id: {
-        type: Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId, // for workers => in which restaurant they work | for users => in which restaurant they are
         default: null
     }
 });

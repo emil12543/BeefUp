@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@risingstack/trace": "^3.0.0",
     "async": "^2.1.4",
     "boom": "^4.2.0",
     "dotenv": "^2.0.0",

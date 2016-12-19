@@ -3,7 +3,16 @@ const Schema = mongoose.Schema;
 
 const OrderSchema = new Schema({
     items: {
-        type: [Schema.Types.ObjectId],
+        type: [{
+            item: {
+                type: Schema.Types.ObjectId,
+                required: true
+            },
+            quantity: {
+                type: Number,
+                default: 1
+            }
+        }],
         required: true
     },
     received_at: {

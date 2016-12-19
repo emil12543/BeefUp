@@ -1,9 +1,9 @@
 require('dotenv').config();
-const config = require('./config/config');
+require('@risingstack/trace');
 
+const config = require('./config/config');
 const Hapi = require('hapi');
 const server = new Hapi.Server();
-
 server.connection({ port: 3000 });
 
 require('./config/mongoose')(config);
@@ -22,7 +22,7 @@ server.register([
 
     server.auth.strategy('jwt', 'jwt', true, require('./config/jwt'));
 
-    server.route(require('./routes'));
+    server.route(require('./config/routes'));
 });
 
 server.start(err => {
