@@ -6,7 +6,7 @@ exports.sign = (id, callback) =>
         id,
         date: new Date()
     }, secret, {
-        algorithm: 'HS256'
+        algorithm: require('./config').alg
     }, (err, token) => {
         if (err)
             return callback(err);

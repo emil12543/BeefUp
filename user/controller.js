@@ -41,7 +41,7 @@ exports.remove = (request, reply) => {
     });
 };
 
-exports.login = (request, reply) => {
+exports.getToken = (request, reply) => {
     auth.sign(request.params.id, (err, token) => {
         if (err)
             return reply(Boom.badRequest('Invalid credentials'));

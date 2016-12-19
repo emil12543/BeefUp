@@ -4,7 +4,7 @@ require('@risingstack/trace');
 const config = require('./config/config');
 const Hapi = require('hapi');
 const server = new Hapi.Server();
-server.connection({ port: 3000 });
+server.connection({ port: config.port });
 
 require('./config/mongoose')(config);
 

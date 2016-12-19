@@ -45,7 +45,7 @@ const routes = [
         method: 'GET',
         config: {
             auth: false,
-            handler: user.login
+            handler: user.getToken
         }
     },
     {

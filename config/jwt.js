@@ -7,7 +7,7 @@ module.exports = {
     validateFunc: validate,
     verifyOptions: {
         algorithms: [
-            'HS256'
+            require('./config').alg
         ]
     }
 };
