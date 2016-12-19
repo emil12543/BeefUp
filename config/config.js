@@ -8,17 +8,26 @@ const envVarsSchema = Joi.object({
     DB: Joi.string()
         .default('mongodb://localhost:27017/restaurant')
 }).unknown()
-  .required()
+  .required();
   
-const { error, value: envVars } = Joi.validate(process.env, envVarsSchema);
-if (error)
-    throw new Error(`Config validation error: ${error.message}`);
+const { err, value: envVars } = Joi.validate(process.env, envVarsSchema);
+if (err)
+    throw new Error(`Config validation error: ${err.message}`);
     
 const conf = {
-    db: envVars.DB,
+    db: {
+        uri: envVars.DB
+    },
     secret: envVars.SECRET,
-    port: envVars.PORT,
-    alg: 'HS256'
+    server: {
+        port: envVars.PORT
+    },
+    jwt: {
+        alg: 'HS256'
+    },
+    encryption: {
+        alg: 'sha256'
+    }
 };
 
 module.exports = conf;

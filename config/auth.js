@@ -1,12 +1,13 @@
 const jwt = require('jsonwebtoken');
 const secret = require('../config/config').secret;
 
-exports.sign = (id, callback) =>
+exports.sign = (user, callback) =>
     jwt.sign({
-        id,
+        _id: user._id,
+        role: user.role,
         date: new Date()
     }, secret, {
-        algorithm: require('./config').alg
+        algorithm: require('./config').jwt.alg
     }, (err, token) => {
         if (err)
             return callback(err);

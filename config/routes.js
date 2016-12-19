@@ -1,3 +1,3 @@
 module.exports = [
-    ...require('./../user/routes')
+    ...require('../user/routes')
 ];

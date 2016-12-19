@@ -14,13 +14,7 @@ const routes = [
         path: '/users',
         method: 'POST',
         config: {
-            auth: 'jwt',
-            validate: {
-                payload: {
-                    name: Joi.string().required(),
-                    age: Joi.number().required()
-                }
-            },
+            auth: false,
             handler: user.create
         }
     },
@@ -41,8 +35,8 @@ const routes = [
         }
     },
     {
-        path: '/users/login/{id}',
-        method: 'GET',
+        path: '/users/token',
+        method: 'POST',
         config: {
             auth: false,
             handler: user.getToken
