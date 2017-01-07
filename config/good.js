@@ -1,4 +1,20 @@
-const options = {
+const config = require('./config');
+const options = config => {
+    let c = {
+        compress: config.good.compress,
+        size: config.good.size,
+        path: config.good.path
+    };
+
+    if (!c.compress)
+        delete c.compress;
+    else if (config.good.type)
+        c.compress = config.good.type;
+
+    return c;
+};
+
+module.exports = {
     ops: {
         interval: 5000
     },
@@ -25,11 +41,7 @@ const options = {
             module: 'rotating-file-stream',
             args: [
                 'ops.log',
-                {
-                    compress: true,
-                    size: '10MB',
-                    path: './logs'
-                }
+                options(config)
             ]
         }],
         errorReporter: [{
@@ -47,14 +59,8 @@ const options = {
             module: 'rotating-file-stream',
             args: [
                 'err.log',
-                {
-                    compress: true,
-                    size: '10MB',
-                    path: './logs'
-                }
+                options(config)
             ]
         }]
     }
 };
-
-module.exports = options;

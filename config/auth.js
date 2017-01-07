@@ -1,22 +1,77 @@
 const jwt = require('jsonwebtoken');
-const secret = require('../config/config').secret;
+const config = require('./config');
+const redis = require('./redis');
+const async = require('async');
+const User = require('mongoose').model('User');
+
+const deleteToken = (user, token, callback) => {
+    User.findByIdAndUpdate(
+        user._id,
+        { $pull: {
+            tokens: {
+                token: token
+            }
+        }},
+        (err) => {
+            if (err)
+                return callback(err);
+        }
+    )
+};
+
+exports.init = () => {
+    async.waterfall([
+        callback => {
+            User.find({
+                tokens: {
+                    $ne: null
+                }
+            }, 'tokens', (err, users) => {
+                if (err)
+                    return callback(err);
+                return callback(null, users);
+            });
+        },
+        (users, callback) => {
+            users.map(user => {
+                user.tokens.map(token => {
+                    this.verify(token.token, (err, decoded) => {
+                        if (err)
+                            deleteToken(user, token.token, err => {
+                                if (err)
+                                    return callback(err);
+                            });
+                        else
+                            redis.addItem(token.token, user._id);
+                    });
+                });
+            });
+        }
+    ], err => {
+        if (err)
+            throw err;
+    });
+};
 
 exports.sign = (user, callback) =>
     jwt.sign({
         _id: user._id,
-        role: user.role,
+        scope: user.role,
         date: new Date()
-    }, secret, {
-        algorithm: require('./config').jwt.alg
+    }, config.secret, {
+        algorithm: config.jwt.alg,
+        expiresIn: config.jwt.exp
     }, (err, token) => {
         if (err)
             return callback(err);
+
         return callback(null, token);
     });
 
 exports.verify = (token, callback) =>
-    jwt.verify(token, secret, (err, decoded) => {
+    jwt.verify(token, config.secret, (err, decoded) => {
         if (err)
             return callback(err);
+
         return callback(null, decoded);
     });

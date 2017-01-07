@@ -1,14 +1,18 @@
+const config = require('./config');
 const redis = require('./redis');
-const validate = (decoded, request, callback) => redis.getItem(request.headers.authorization) ? callback(null, true) : callback(null, false);
+const async = require('async');
+const User = require('mongoose').model('User');
 
-// TODO: postinstall => put all active tokens from user Model in redis and remove all unactive tokens
+const validate = (decoded, request, callback) => {
+    return redis.getItem(request.headers.authorization) ? callback(null, true) : callback(null, false);
+};
 
 module.exports = {
-    key: require('./config').secret,
+    key: config.secret,
     validateFunc: validate,
     verifyOptions: {
         algorithms: [
-            require('./config').jwt.alg
+            config.jwt.alg
         ]
     }
 };

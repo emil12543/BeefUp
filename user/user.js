@@ -8,6 +8,8 @@ const UserSchema = new Schema({
         type: String,
         min: 4,
         max: 24,
+        match: /^[\w]+$/i,
+        unique: true,
         required: true,
     },
     password: {
@@ -32,10 +34,6 @@ const UserSchema = new Schema({
             type: String,
             required: true
         },
-        active: {
-            type: Boolean,
-            default: true
-        },
         date: {
             type: Date,
             default: new Date()
@@ -55,44 +53,44 @@ const UserSchema = new Schema({
         type: String,
         min: 6,
         max: 48,
-        required: true
+        unique: true
     },
     role: {
         type: String,
         default: 'normal',
-        enum: ['normal', 'waiter', 'barman', 'cook', 'owner']
+        enum: ['normal', 'waiter', 'barman', 'cook', 'cashier', 'owner']
     },
     restaurant_id: {
-        type: Schema.Types.ObjectId, // for workers => in which restaurant they work | for users => in which restaurant they are
+        type: Schema.Types.ObjectId, // for staff => in which restaurant they work | for users => in which restaurant they are
         default: null
     }
 });
 
-UserSchema.pre('save', function (callback) {
+UserSchema.pre('save', function (next) {
     let user = this;
 
     if (!user.isModified('password'))
-        return callback();
+        return next();
 
     let buf = crypto.randomBytes(2048);
     buf = buf.toString('hex');
-    const key = crypto.pbkdf2(user.password, buf, 10000, 2048, alg, function (err, key) {
+    crypto.pbkdf2(user.password, buf, 10000, 2048, alg, function (err, key) {
         if (err)
-            return callback(err);
+            return next(err);
 
         user.password = key.toString('hex');
         user.hash = buf;
-        return callback();
+        return next();
     });
 });
 
-UserSchema.methods.verifyPassword = function(password, callback) {
+UserSchema.methods.verifyPassword = function(password, next) {
     const userPassword = this.password;
     crypto.pbkdf2(password, this.hash, 10000, 2048, alg, function (err, key) {
         if (err)
-            return callback(err);
+            return next(err);
 
-        return callback(null, key.toString('hex') === userPassword);
+        return next(null, key.toString('hex') === userPassword);
     });
 };
 
