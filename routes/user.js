@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const User = require('./handlers.js');
+const User = require('../handlers/user');
 
 module.exports = [
     {
@@ -48,7 +48,7 @@ module.exports = [
                         last: Joi.string().required()
                     }).required(),
                     email: Joi.string().email().required(),
-                    role: Joi.string().valid('owner')
+                    role: Joi.string()
                 }
             }
         }
@@ -161,6 +161,16 @@ module.exports = [
                 params: {
                     id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
                 }
+            }
+        }
+    },
+    {
+        path: '/test',
+        method: 'POST',
+        config: {
+            auth: false,
+            handler: function(request, reply) {
+                reply(request.payload);
             }
         }
     }

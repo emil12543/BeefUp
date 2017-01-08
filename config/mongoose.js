@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 mongoose.plugin(require('mongoose-unique-validator'));
-require('./models');
+require('../models');
 
 module.exports = (config) => {
     mongoose.Promise = global.Promise;

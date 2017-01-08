@@ -1,9 +1,6 @@
-const Database = require('jsredis');
-const db = new Database();
-const config = require('./config');
+const Redis = require('ioredis');
+let redis = new Redis();
 
-exports.addItem = (field, value) => db.hsetnx(config.secret, field, value);
-
-exports.getItem = field => db.hget(config.secret, field);
-
-exports.deleteItem = field => db.hdel(config.secret, field);
+exports.addItem = (field, value) => (redis.set(field, value));
+exports.getItem = field => (redis.get(field));
+exports.deleteItem = field => (redis.del(field));

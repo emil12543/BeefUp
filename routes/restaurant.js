@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const Restaurant = require('./handlers.js');
+const Restaurant = require('../handlers/restaurant');
 
 module.exports = [
     {
