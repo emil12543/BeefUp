@@ -1,10 +1,10 @@
 const config = require('./config');
-const redis = require('./redis');
+const memory = require('./memory');
 const async = require('async');
 const User = require('mongoose').model('User');
 
 const validate = (decoded, request, callback) => {
-    return redis.getItem(request.headers.authorization) ? callback(null, true) : callback(null, false);
+    return memory.get(request.headers.authorization) ? callback(null, true) : callback(null, false);
 };
 
 module.exports = {

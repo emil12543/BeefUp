@@ -6,10 +6,10 @@ const mongoose = require('mongoose');
 const UserModel = mongoose.model('User');
 const RestaurantModel = mongoose.model('Restaurant');
 const Restaurant = require('../restaurant');
-const Redis = require('ioredis');
-const redis = new Redis();
+const memory = require('../../config/memory');
+const handleError = require('../helpers').handleError;
 
-class User {    
+class User {
     static save(user, reply, callback) {
         user.save(err => {
             if (err)
@@ -173,11 +173,8 @@ class User {
                 }, (err, token) => {
                     if (err)
                         return callback(err);
-
-                    redis.set(token, user._id).then(() => {
-                        redis.get(token).then((result) => console.log(result));
-                    });
                     
+                    memory.add(token, user._id);
                     return callback(null, user, token);
                 });
             },
@@ -218,7 +215,7 @@ class User {
                     if (decoded._id != request.auth.credentials._id)
                         return reply(Boom.unauthorized('You are not authorized to revoke this token'));
 
-                    redis.deleteItem(request.payload.token);
+                    memory.remove(request.payload.token);
                     // TODO: check if the delete action is done correctly
                     // think about swap the funcs
                     callback(null, decoded, request.payload.token);

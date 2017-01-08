@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('./config');
-const redis = require('./redis');
+const memory = require('./memory');
 const async = require('async');
 const User = require('mongoose').model('User');
 
@@ -16,7 +16,7 @@ const deleteToken = (user, token, callback) => {
             if (err)
                 return callback(err);
         }
-    )
+    );
 };
 
 exports.init = () => {
@@ -42,7 +42,7 @@ exports.init = () => {
                                     return callback(err);
                             });
                         else
-                            redis.addItem(token.token, user._id);
+                            memory.add(token.token, user._id);
                     });
                 });
             });
