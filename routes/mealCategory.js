@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const MealCategory = require('./handlers.js');
+const MealCategory = require('../handlers/mealCategory');
 
 module.exports = [
     {

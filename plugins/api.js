@@ -1,7 +1,7 @@
 exports.register = (server, options, next) => {
     if (options.strategy)
         server.auth.strategy(options.strategy.name, options.strategy.scheme, true, options.strategy.conf);
-    server.route(options.routes.map(route => route));
+    server.route(options.routes);
 
     next();
 };

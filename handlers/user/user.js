@@ -1,14 +1,15 @@
 const Boom = require('boom');
 const async = require('async');
-const auth = require('../config/auth');
-const redis = require('../config/redis');
+const auth = require('../../config/auth');
 const generatePassword = require('password-generator');
 const mongoose = require('mongoose');
 const UserModel = mongoose.model('User');
 const RestaurantModel = mongoose.model('Restaurant');
-const Restaurant = require('../restaurant/handlers');
+const Restaurant = require('../restaurant');
+const Redis = require('ioredis');
+const redis = new Redis();
 
-class User {
+class User {    
     static save(user, reply, callback) {
         user.save(err => {
             if (err)
@@ -173,7 +174,10 @@ class User {
                     if (err)
                         return callback(err);
 
-                    redis.addItem(token, user._id);
+                    redis.set(token, user._id).then(() => {
+                        redis.get(token).then((result) => console.log(result));
+                    });
+                    
                     return callback(null, user, token);
                 });
             },
