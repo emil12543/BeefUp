@@ -212,10 +212,86 @@ describe('unit tests - users', () => {
         })
     });
 
+    it('should get a restaurant', done => {
+        server.inject({
+            method: 'GET',
+            url: '/api/v0/restaurants/' + restaurant._id,
+            headers: {
+                'Authorization' : tokens[0]
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            done();
+        })
+    });
+
     it('should get all restaurants', done => {
         server.inject({
             method: 'GET',
             url: '/api/v0/restaurants',
+            headers: {
+                'Authorization' : tokens[0]
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            done();
+        })
+    });
+
+    let category;
+
+    it('should add new meal category', done => {
+        server.inject({
+            method: 'POST',
+            url: '/api/v0/restaurants/' + restaurant._id + '/meals',
+            headers: {
+                'Authorization' : tokens[0]
+            },
+            payload: {
+                title: 'Salads'
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            category = response.result;
+            done();
+        })
+    });
+
+    it('should update meal category', done => {
+        server.inject({
+            method: 'PUT',
+            url: '/api/v0/restaurants/' + restaurant._id + '/meals/' + category._id,
+            headers: {
+                'Authorization' : tokens[0]
+            },
+            payload: {
+                title: 'UpdatedSalads'
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            category = response.result;
+            done();
+        })
+    });
+
+    it('should get all meal categories', done => {
+        server.inject({
+            method: 'GET',
+            url: '/api/v0/restaurants/' + restaurant._id + '/meals',
+            headers: {
+                'Authorization' : tokens[0]
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            expect(response.result).to.be.array();
+            done();
+        })
+    });
+
+    it('should remove meal category', done => {
+        server.inject({
+            method: 'DELETE',
+            url: '/api/v0/restaurants/' + restaurant._id + '/meals/' + category._id,
             headers: {
                 'Authorization' : tokens[0]
             }

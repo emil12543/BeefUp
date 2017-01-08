@@ -9,6 +9,15 @@ const RestaurantModel = mongoose.model('Restaurant');
 const Restaurant = require('../restaurant/handlers');
 
 class User {
+    static save(user, reply, callback) {
+        user.save(err => {
+            if (err)
+                return callback(err);
+
+            return callback(null, user);
+        });
+    }
+
     static verifyPassword(user, password, reply, callback) {
         user.verifyPassword(password, (err, isMatch) => {
             if (err)
@@ -21,18 +30,12 @@ class User {
         });
     }
 
-    static save(user, reply, callback) {
-        user.save(err => {
-            if (err) {
-                if (err.name == 'ValidationError' && err.errors.username && err.errors.username.kind == 'unique')
-                    return reply(Boom.badData('This username is already taken'));
-                else if (err.name == 'ValidationError' && err.errors.email && err.errors.email.kind == 'unique')
-                    return reply(Boom.badData('There is already a user with this email'));
-
+    static find(query, fields, callback) {
+        UserModel.find(query, fields, (err, users) => {
+            if (err)
                 return callback(err);
-            }
 
-            return callback(null, user);
+            return callback(null, users);
         });
     }
 
@@ -63,8 +66,43 @@ class User {
     }
 
     static create(request, reply) {
-        const user = new UserModel(request.payload);
-        User.save(user, reply, (err, user) => {
+        async.waterfall([
+            callback => {
+                User.find({
+                    username: request.payload.username
+                }, null, (err, users) => {
+                    if (err)
+                        return callback(err);
+
+                    if (!!users.length)
+                        return reply(Boom.badData('This username is already taken'));
+
+                    return callback();
+                });
+            },
+            callback => {
+                User.find({
+                    email: request.payload.email
+                }, null, (err, users) => {
+                    if (err)
+                        return callback(err);
+
+                    if (!!users.length)
+                        return reply(Boom.badData('There is already a user with this email'));
+
+                    return callback();
+                });
+            },
+            callback => {
+                const user = new UserModel(request.payload);
+                User.save(user, reply, (err, user) => {
+                    if (err)
+                        return callback(err);
+
+                    return callback(null, user);
+                });
+            }
+        ], (err, user) => {
             if (err)
                 return reply(Boom.badImplementation(err));
 
@@ -185,16 +223,18 @@ class User {
             (decoded, token, callback) => {
                 UserModel.findByIdAndUpdate(
                     decoded._id,
-                    { $pull: {
-                        tokens: {
-                            token: token
+                    {
+                        $pull: {
+                            tokens: {
+                                token: token
+                            }
                         }
-                    }}, (err) => {
+                    }, (err) => {
                         if (err)
                             return callback(err);
 
                         return callback(null);
-                });
+                    });
             }
         ], err => {
             if (err)
@@ -209,18 +249,6 @@ class User {
     static addStaff(request, reply) {
         async.waterfall([
             callback => {
-                // RestaurantModel.findById(request.payload.restaurant_id, (err, restaurant) => {
-                //     if (err)
-                //         return callback(err);
-                //
-                //     if (!restaurant)
-                //         return reply(Boom.badData('There is no such restaurant'));
-                //
-                //     if (restaurant.owner != request.auth.credentials._id)
-                //         return reply(Boom.unauthorized('You are not authorized to add staff to this restaurant'));
-                //
-                //     return callback();
-                // });
                 Restaurant.findById(request.payload.restaurant_id, null, request.auth.credentials._id, reply, callback);
             },
             (restaurant, callback) => {
@@ -314,32 +342,12 @@ class User {
     static getStaff(request, reply) {
         async.waterfall([
             callback => {
-                // UserModel.findById(request.params.id, '-hash -password', (err, user) => {
-                //     if (err)
-                //         return callback(err);
-                //
-                //     if (!user)
-                //         return reply(Boom.badData('There is no such user'));
-                //
-                //     return callback(null, user);
-                // });
                 User.findById(request.params.id, '-hash -passowrd', reply, callback);
             },
             (user, callback) => {
                 User.isStaff(user, reply, callback);
             },
             (user, callback) => {
-                // if (['waiter', 'barman', 'cooker', 'cashier'].indexOf(user.role) == -1)
-                //     return reply(Boom.unauthorized('You are not authorized to get this user'));
-                // RestaurantModel.findById(user.restaurant_id, (err, restaurant) => {
-                //     if (err)
-                //         return callback(err);
-                //
-                //     if (restaurant.owner != request.auth.credentials._id)
-                //         return reply(Boom.unauthorized('You are not authorized to get this user'));
-                //
-                //     return reply(user);
-                // });
                 Restaurant.findById(user.restaurant_id, null, null, reply, err => {
                     if (err)
                         return callback(err);
@@ -387,43 +395,6 @@ class User {
                 message: 'Success'
             });
         });
-        // UserModel.findById(request.params.id, (err, user) => {
-        //     if (err)
-        //         return reply(Boom.badImplementation(err));
-        //
-        //     if (!user)
-        //         return reply(Boom.badData('There is no such user'));
-        //
-        //     if (['waiter', 'barman', 'cooker', 'cashier'].indexOf(user.role) == -1)
-        //         return reply(Boom.unauthorized('You are not authorized to delete this user'));
-        //
-        //     async.series([
-        //         callback => {
-        //             RestaurantModel.findById(user.restaurant_id, (err, restaurant) => {
-        //                 if (err)
-        //                     return callback(err);
-        //
-        //                 if (restaurant.owner != request.auth.credentials._id)
-        //                     return reply(Boom.unauthorized('You are not authorized to get this user'));
-        //
-        //                 return callback();
-        //             });
-        //         },
-        //         callback => {
-        //             user.remove(err => {
-        //                 if (err)
-        //                     return callback(err);
-        //
-        //                 return reply({
-        //                     message: 'Success'
-        //                 });
-        //             });
-        //         }
-        //     ], err => {
-        //         if (err)
-        //             return reply(Boom.badImplementation(err));
-        //     });
-        // });
     }
 
     // TODO: get all staff from a restaurant
