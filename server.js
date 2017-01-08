@@ -1,30 +1,30 @@
 require('dotenv').config();
-const config = require('./config');
+const config = require('./config/config');
 const Hapi = require('hapi');
 const server = new Hapi.Server();
-require('./mongoose')(config);
-require('./cron');
+require('./config/mongoose')(config);
+require('./config/cron');
 
 const plugins = [
     {
         register: require('good'),
-        options: require('./good')
+        options: require('./config/good')
     },
     {
         register: require('hapi-auth-jwt2')
     },
     {
-        register: require('../plugins/api'),
+        register: require('./plugins/api'),
         options: {
             routes: require('./routes'),
             strategy: {
                 name: 'jwt',
                 scheme: 'jwt',
-                conf: require('./jwt')
+                conf: require('./config/jwt')
             }
         },
         routes: {
-            prefix: '/api/v0'
+            prefix: '/api/v1'
         }
     }
 ];
@@ -40,7 +40,11 @@ server.register(plugins, err => {
     if (err)
         throw err;
 
-    require('./auth').init();
+    require('./config/auth').init();
 });
 
-module.exports = server;
+server.start(err => {
+    if (err)
+        throw err;
+    console.log(`Server running at: ${server.info.uri}`);
+});
