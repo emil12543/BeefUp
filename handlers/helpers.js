@@ -43,6 +43,14 @@ exports.handleResponse = (err, reply, response) => {
         return reply({
             message: 'There is no such user'
         });
+    else if (err.message == 'Invalid address')
+        return reply(Boom.badData(err.message));
+    else if (err.message == 'No restaurant')
+        return reply({
+            message: 'There is no such restaurant'
+        });
+    else if (err.message == 'Not authorized to restaurant')
+        return reply(Boom.unauthorized('You are not authorized to this restaurant'));
 
     return reply(Boom.badImplementation(err));
 };

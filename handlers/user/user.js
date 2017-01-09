@@ -154,7 +154,7 @@ class User {
         let password;
         async.waterfall([
                 callback => {
-                    Restaurant.findById(request.payload.restaurant_id, null, request.auth.credentials._id, reply, callback);
+                    Restaurant.findById(request.payload.restaurant_id, request.auth.credentials._id, callback);
                 },
                 (restaurant, callback) => {
                     password = generatePassword(8);
@@ -206,7 +206,7 @@ class User {
                     isStaff(user, reply, callback);
                 },
                 (user, callback) => {
-                    Restaurant.findById(user.restaurant_id, null, request.auth.credentials._id, reply, err => {
+                    Restaurant.findById(user.restaurant_id, request.auth.credentials._id, err => {
                         if (err)
                             return callback(err);
 
@@ -241,7 +241,7 @@ class User {
         );
     }
 
-    static deleteStaff(request, reply) {
+    static removeStaff(request, reply) {
         async.waterfall([
                 callback => {
                     User.findById(request.params.id, callback);

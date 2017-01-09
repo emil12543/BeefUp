@@ -2,40 +2,19 @@ const Boom = require('boom');
 const async = require('async');
 const mongoose = require('mongoose');
 const RestaurantModel = mongoose.model('Restaurant');
+const handleResponse = require('../helpers').handleResponse;
 
 class Restaurant {
-    static save(restaurant, reply, callback) {
-        restaurant.save(err => {
-            if (err) {
-                if (err.message == 'Invalid address')
-                    return reply(Boom.badData(err.message));
-
-                return callback(err);
-            }
-
-            return callback(null, restaurant);
-        });
-    }
-
-    static find(query, fields, callback) {
-        RestaurantModel.find(query, fields, (err, restaurants) => {
-            if (err)
-                return callback(err);
-
-            return callback(null, restaurants);
-        });
-    }
-
-    static findById(id, fields, protect, reply, callback) {
-        RestaurantModel.findById(id, fields, (err, restaurant) => {
+    static findById(id, protect, callback) {
+        RestaurantModel.findById(id, (err, restaurant) => {
             if (err)
                 return callback(err);
 
             if (!restaurant)
-                return reply(Boom.badData('There is no such restaurant'));
+                return callback(new Error('No restaurant'));
 
             if (protect && restaurant.owner != protect)
-                return reply(Boom.unauthorized('You must be the owner to this restaurant'));
+                return callback(Boom.unauthorized('Not authorized to restaurant'));
 
             return callback(null, restaurant);
         });
@@ -49,27 +28,25 @@ class Restaurant {
             },
             owner: request.auth.credentials._id
         });
-        Restaurant.save(restaurant, reply, (err, restaurant) => {
-            if (err)
-                return reply(Boom.badImplementation(err));
-
-            return reply(restaurant);
+        restaurant.save(err => {
+            handleResponse(err, reply, {
+                data: restaurant
+            });
         });
     }
 
     static getOne(request, reply) {
-        Restaurant.findById(request.params.id, null, null, reply, (err, restaurant) => {
-            if (err)
-                return reply(Boom.badImplementation(err));
-
-            return reply(restaurant);
+        Restaurant.findById(request.params.id, null, (err, restaurant) => {
+            handleResponse(err, reply, {
+                data: restaurant
+            });
         });
     }
 
     static update(request, reply) {
         async.waterfall([
             callback => {
-                Restaurant.findById(request.params.id, null, request.auth.credentials._id, reply, callback);
+                Restaurant.findById(request.params.id, request.auth.credentials._id, callback);
             },
             (restaurant, callback) => {
                 restaurant.name = request.payload.name || restaurant.name;
@@ -78,39 +55,25 @@ class Restaurant {
                         address: request.payload.location.address
                     };
 
-                Restaurant.save(restaurant, reply, callback);
+                restaurant.save(callback);
             }
-        ], err => {
-            if (err)
-                return reply(Boom.badImplementation(err));
-
-            return reply({
-                message: 'Success'
-            });
-        });
+        ], err => handleResponse(err, reply));
     }
 
     static remove(request, reply) {
         async.waterfall([
             callback => {
-                Restaurant.findById(request.params.id, null, request.auth.credentials._id, reply, callback);
+                Restaurant.findById(request.params.id, request.auth.credentials._id, callback);
             },
             (restaurant, callback) => {
                 restaurant.remove(err => {
                     if (err)
                         return callback(err);
 
-                    return callback(null, err);
+                    return callback();
                 });
             }
-        ], err => {
-            if (err)
-                return reply(Boom.badImplementation(err));
-
-            return reply({
-                message: 'Success'
-            });
-        });
+        ], err => handleResponse(err, reply));
     }
 
     static get(request, reply) {
@@ -130,22 +93,11 @@ class Restaurant {
             }
         }
 
-        Restaurant.find(query, null, (err, restaurants) => {
-            if (err)
-                return reply(Boom.badImplementation(err));
-
-            return reply(restaurants);
+        RestaurantModel.find(query, (err, restaurants) => {
+            handleResponse(err, reply, {
+                data: restaurants
+            });
         });
-        // RestaurantModel.find(
-        //     fields, (err, restaurants) => {
-        //     if (err)
-        //         return reply(Boom.badImplementation(err));
-        //
-        //     if (!restaurants.length)
-        //         return reply(Boom.badData((request.auth.credentials.scope == 'owner' ? 'You haven\'t registered any restaurants yet' : 'There aren\'t any restaurants') + (options['location.country'] || options['location.city'] ? ' in this area' : '')));
-        //
-        //     return reply(restaurants);
-        // });
     }
 }
 

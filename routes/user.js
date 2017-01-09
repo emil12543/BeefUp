@@ -156,7 +156,7 @@ module.exports = [
                 strategy: 'jwt',
                 scope: 'owner'
             },
-            handler: User.deleteStaff,
+            handler: User.removeStaff,
             validate: {
                 params: {
                     id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)

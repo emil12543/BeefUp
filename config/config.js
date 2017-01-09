@@ -6,7 +6,7 @@ const envVarsSchema = Joi.object({
     SECRET: Joi.string()
         .default('123'),
     DB: Joi.string()
-        .default('mongodb://localhost:27017/restaurant'),
+        .default('mongodb://localhost:27017/beefup'),
     LOGS_PATH: Joi.string()
         .default('./logs'),
     LOGS_SIZE: Joi.string().regex(/^[1-9]+(B|K|M|G)$/g)

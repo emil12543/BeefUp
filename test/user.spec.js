@@ -353,7 +353,19 @@ describe('unit tests - users', () => {
             }
         }, response => {
             expect(response.statusCode).to.equal(200);
-            user = response.result;
+            done();
+        })
+    });
+
+    it('should remove staff', done => {
+        server.inject({
+            method: 'DELETE',
+            url: '/api/v0/staff/' + user._id,
+            headers: {
+                'Authorization' : tokens[0]
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
             done();
         })
     });
