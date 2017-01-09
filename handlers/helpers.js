@@ -51,6 +51,16 @@ exports.handleResponse = (err, reply, response) => {
         });
     else if (err.message == 'Not authorized to restaurant')
         return reply(Boom.unauthorized('You are not authorized to this restaurant'));
+    else if (err.message == 'The tokens are the same')
+        return reply(Boom.badData(err.message));
+    else if (err.message == 'Not authorized to revoke token')
+        return reply(Boom.unauthorized('You are not authorized to revoke this token'));
+    else if (err.message == 'No mealcategory')
+        return reply({
+            message: 'There is no such category'
+        });
+    else if (err.message == 'Not authorized to mealcategory')
+        return reply(Boom.unauthorized('You are not authorized to this mealcategory'));
 
     return reply(Boom.badImplementation(err));
 };
