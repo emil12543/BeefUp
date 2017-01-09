@@ -1,1 +1,4 @@
-module.exports = require('./user');
+module.exports = {
+    User: require('./user'),
+    Staff: require('./staff')
+};

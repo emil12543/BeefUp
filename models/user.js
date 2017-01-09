@@ -61,7 +61,7 @@ const UserSchema = new Schema({
         enum: ['normal', 'waiter', 'barman', 'cook', 'cashier', 'owner']
     },
     restaurant_id: {
-        type: Schema.Types.ObjectId, // for staff => in which restaurant they work | for users => in which restaurant they are
+        type: Schema.Types.ObjectId, // if the user is staff this field stores in which restaurant they work else it stores in which restaurant they are
         default: null
     }
 });

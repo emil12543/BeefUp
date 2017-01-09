@@ -1,3 +1,5 @@
+const Restaurant = require('../restaurant');
+
 /**
  * @param user model
  * @param password
@@ -30,4 +32,19 @@ exports.isStaff = (user, callback) => {
         return callback(new Error('Not staff'));
 
     return callback(null, user);
+};
+
+/**
+ * @param staff
+ * @param owner_id
+ * @param callback
+ * @description Check if the restaurant where the staff works belongs to the provided owner
+ */
+exports.checkStaffRestaurantOwnership = (staff, owner_id, callback) => {
+    Restaurant.findById(staff.restaurant_id, owner_id, err => {
+        if (err)
+            return callback(err);
+
+        return callback(null, staff);
+    });
 };

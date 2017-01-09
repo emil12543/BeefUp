@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const User = require('../handlers/user');
+const User = require('../handlers/user').User;
+const Staff = require('../handlers/user').Staff;
 
 module.exports = [
     {
@@ -88,7 +89,7 @@ module.exports = [
                 strategy: 'jwt',
                 scope: 'owner'
             },
-            handler: User.addStaff,
+            handler: Staff.addStaff,
             validate: {
                 payload: {
                     username: Joi.string().alphanum().min(4).max(24).required(),
@@ -111,7 +112,7 @@ module.exports = [
                 strategy: 'jwt',
                 scope: 'owner'
             },
-            handler: User.updateStaff,
+            handler: Staff.updateStaff,
             validate: {
                 params: {
                     id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
@@ -139,7 +140,7 @@ module.exports = [
                 strategy: 'jwt',
                 scope: 'owner'
             },
-            handler: User.getStaff,
+            handler: Staff.getStaff,
             validate: {
                 params: {
                     id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
@@ -156,7 +157,7 @@ module.exports = [
                 strategy: 'jwt',
                 scope: 'owner'
             },
-            handler: User.removeStaff,
+            handler: Staff.removeStaff,
             validate: {
                 params: {
                     id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
