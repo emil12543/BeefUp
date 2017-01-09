@@ -57,7 +57,7 @@ describe('unit tests - users', () => {
             }
         }, response => {
             expect(response.statusCode).to.equal(401);
-            expect(response.result.message).to.equal('Wrong username or password');
+            expect(response.result.message).to.equal('There is no user with this username');
             done();
         });
     });
@@ -146,7 +146,7 @@ describe('unit tests - users', () => {
                 email: 'user@beefup.eu'
             }
         }, response => {
-            expect(response.statusCode).to.equal(422);
+            expect(response.statusCode).to.equal(200);
             expect(response.result.message).to.equal('This username is already taken');
             done();
         });
@@ -166,7 +166,7 @@ describe('unit tests - users', () => {
                 email: 'user1@beefup.eu'
             }
         }, response => {
-            expect(response.statusCode).to.equal(422);
+            expect(response.statusCode).to.equal(200);
             expect(response.result.message).to.equal('There is already a user with this email');
             done();
         });

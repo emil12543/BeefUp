@@ -86,6 +86,7 @@ UserSchema.pre('save', function (next) {
 
 UserSchema.methods.verifyPassword = function(password, next) {
     const userPassword = this.password;
+
     crypto.pbkdf2(password, this.hash, 10000, 2048, alg, function (err, key) {
         if (err)
             return next(err);

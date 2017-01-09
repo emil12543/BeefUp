@@ -164,14 +164,4 @@ module.exports = [
             }
         }
     },
-    {
-        path: '/test',
-        method: 'POST',
-        config: {
-            auth: false,
-            handler: function(request, reply) {
-                reply(request.payload);
-            }
-        }
-    }
 ];

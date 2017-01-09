@@ -1,4 +1,4 @@
-const db = {};
+let db = {};
 
 exports.add = (field, value) => db[field] = value;
 
