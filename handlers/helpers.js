@@ -1,15 +1,22 @@
 const Boom = require('boom');
 
+/**
+ * @param err
+ * @param reply
+ * @param response
+ * @description Will handle the provided error. If there isn't error with send the user provided data.
+ * @throws Unexpected error
+ */
 exports.handleResponse = (err, reply, response) => {
     if (!err) {
         let data = {};
-        if (!response)
+        if (!response) // sets default response
             data = {
                 message: 'Success'
             };
         else {
-            if (response.fields) {
-                if (response.type && response.type === 'exclude') {
+            if (response.fields) { // checks if only some fields should the responded
+                if (response.type && response.type === 'exclude') { // checks if the provided fields should be excluded
                     data = response.data;
                     response.fields.map(field => {
                         delete data[field];
@@ -25,6 +32,7 @@ exports.handleResponse = (err, reply, response) => {
         return reply(data);
     }
 
+    // handle errors
     if (err.name == 'ValidationError' && err.errors.username && err.errors.username.kind == 'unique')
         return reply({
             message: 'This username is already taken'
