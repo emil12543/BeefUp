@@ -1,9 +1,7 @@
-const Boom = require('boom');
 const async = require('async');
 const auth = require('../../config/auth');
 const mongoose = require('mongoose');
 const UserModel = mongoose.model('User');
-const Restaurant = require('../restaurant');
 const memory = require('../../config/memory');
 const handleResponse = require('../helpers').handleResponse;
 const verifyPassword = require('./helpers').verifyPassword;
@@ -125,7 +123,7 @@ class User {
                 callback => {
                     auth.verify(request.payload.token, (err, decoded) => { // checks if the provided token is valid
                         if (err)
-                            return reply(Boom.badData('Invalid token'));
+                            return callback(new Error('Invalid token'));
 
                         if (request.payload.token == request.headers.authorization) // checks if the token that should be revoked is the same with the authorization token
                             return callback(new Error('The tokens are the same'));

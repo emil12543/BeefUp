@@ -3,14 +3,28 @@ const generatePassword = require('password-generator');
 const mongoose = require('mongoose');
 const User = require('./user');
 const UserModel = mongoose.model('User');
-const Restaurant = require('../restaurant');
+const Restaurant = require('../restaurant').Restaurant;
 const memory = require('../../config/memory');
 const handleResponse = require('../helpers').handleResponse;
 const isStaff = require('./helpers').isStaff;
-const checkStaffRestaurantOwnership = require('./helpers').checkStaffRestaurantOwnership;
 
 class Staff {
-    static addStaff(request, reply) {
+    /**
+     * @param staff
+     * @param owner_id
+     * @param callback
+     * @description Check if the restaurant where the staff works belongs to the provided owner
+     */
+    static checkStaffRestaurantOwnership(staff, owner_id, callback) {
+        Restaurant.findById(staff.restaurant_id, owner_id, err => {
+            if (err)
+                return callback(err);
+
+            return callback(null, staff);
+        });
+    };
+
+    static create(request, reply) {
         let password;
         async.waterfall([
                 callback => {
@@ -34,7 +48,7 @@ class Staff {
         );
     }
 
-    static getStaff(request, reply) {
+    static getOne(request, reply) {
         async.waterfall([
                 callback => {
                     User.findById(request.params.id, callback);
@@ -43,7 +57,7 @@ class Staff {
                     isStaff(user, reply, callback); // checks if the user that should be returned to the owner is staff
                 },
                 (user, callback) => {
-                    checkStaffRestaurantOwnership(user, request.auth.credentials._id, callback)
+                    Staff.checkStaffRestaurantOwnership(user, request.auth.credentials._id, callback)
                 }
             ], (err, user) => handleResponse(err, reply, {
                 data: user
@@ -51,7 +65,7 @@ class Staff {
         );
     }
 
-    static updateStaff(request, reply) {
+    static update(request, reply) {
         let password;
         async.waterfall([
                 callback => {
@@ -61,7 +75,7 @@ class Staff {
                     isStaff(user, reply, callback);
                 },
                 (user, callback) => {
-                    checkStaffRestaurantOwnership(user, request.auth.credentials._id, callback)
+                    Staff.checkStaffRestaurantOwnership(user, request.auth.credentials._id, callback)
                 },
                 (user, callback) => {
                     // set the updated fields
@@ -96,7 +110,7 @@ class Staff {
         );
     }
 
-    static removeStaff(request, reply) {
+    static remove(request, reply) {
         async.waterfall([
                 callback => {
                     User.findById(request.params.id, callback);
@@ -105,7 +119,7 @@ class Staff {
                     isStaff(user, reply, callback);
                 },
                 (user, callback) => {
-                    checkStaffRestaurantOwnership(user, request.auth.credentials._id, callback)
+                    Staff.checkStaffRestaurantOwnership(user, request.auth.credentials._id, callback)
                 },
                 (user, callback) => {
                     user.remove(err => {

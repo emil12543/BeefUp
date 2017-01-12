@@ -15,11 +15,11 @@ const ItemSchema = new Schema({
         required: true
     },
     liquid: {
-        type: Boolean, // liquid or meal
-        required: true
+        type: Boolean, // liquid or no
+        default: false
     },
-    type: {
-        type: String // predefined in restaurant.typesMeals
+    mealcategory_id: {
+        type: Schema.Types.ObjectId // predefined in mealCategory
     },
     weight: {
         type: Number, // if it's a liquid => ml else gr

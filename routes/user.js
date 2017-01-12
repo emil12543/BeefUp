@@ -89,7 +89,7 @@ module.exports = [
                 strategy: 'jwt',
                 scope: 'owner'
             },
-            handler: Staff.addStaff,
+            handler: Staff.create,
             validate: {
                 payload: {
                     username: Joi.string().alphanum().min(4).max(24).required(),
@@ -112,7 +112,7 @@ module.exports = [
                 strategy: 'jwt',
                 scope: 'owner'
             },
-            handler: Staff.updateStaff,
+            handler: Staff.update,
             validate: {
                 params: {
                     id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
@@ -140,7 +140,7 @@ module.exports = [
                 strategy: 'jwt',
                 scope: 'owner'
             },
-            handler: Staff.getStaff,
+            handler: Staff.getOne,
             validate: {
                 params: {
                     id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
@@ -157,7 +157,7 @@ module.exports = [
                 strategy: 'jwt',
                 scope: 'owner'
             },
-            handler: Staff.removeStaff,
+            handler: Staff.remove,
             validate: {
                 params: {
                     id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)

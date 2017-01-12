@@ -1,4 +1,3 @@
-const Boom = require('boom');
 const async = require('async');
 const mongoose = require('mongoose');
 const RestaurantModel = mongoose.model('Restaurant');
@@ -19,11 +18,11 @@ class Restaurant {
             if (err)
                 return callback(err);
 
-            if (!restaurant) // cheks if the restaurant is found
+            if (!restaurant) // checks if the restaurant is found
                 return callback(new Error('No restaurant'));
 
             if (protect && restaurant.owner != protect) // checks if the restaurant owner is the same as the provided one
-                return callback(Boom.unauthorized('Not authorized to restaurant'));
+                return callback(new Error('Not authorized to restaurant'));
 
             return callback(null, restaurant); // returns the callback with the found restaurant
         });

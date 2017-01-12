@@ -288,6 +288,94 @@ describe('unit tests - users', () => {
         })
     });
 
+    let item;
+
+    it('should add new item', done => {
+        server.inject({
+            method: 'POST',
+            url: '/api/v0/items',
+            headers: {
+                'Authorization' : tokens[0]
+            },
+            payload: {
+                name: 'Shopska salad',
+                time: 5,
+                ingredients: ['cucumbers', 'tomatoes', 'cheese', 'onion'],
+                mealcategory_id: category._id,
+                weight: 400,
+                price: 4,
+                restaurant_id: restaurant._id
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            item = response.result;
+            done();
+        });
+    });
+
+    it('should get an item', done => {
+        server.inject({
+            method: 'GET',
+            url: '/api/v0/items/' + item._id,
+            headers: {
+                'Authorization' : tokens[0]
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            done();
+        });
+    });
+
+    it('should update an item', done => {
+        server.inject({
+            method: 'PUT',
+            url: '/api/v0/items/' + item._id,
+            headers: {
+                'Authorization' : tokens[0]
+            },
+            payload: {
+                name: "Ovchaska salad",
+                time: 7,
+                ingredients: ['cucumbers', 'tomatoes', 'cheese', 'onion', 'ham', 'eggs'],
+                weight: 550,
+                price: 5
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            done();
+        });
+    });
+
+    it('should return error there is no such mealcategory', done => {
+        server.inject({
+            method: 'PUT',
+            url: '/api/v0/items/' + item._id,
+            headers: {
+                'Authorization' : tokens[0]
+            },
+            payload: {
+                mealcategory_id: '5873a7274a2ce534d0fec7fc'
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            expect(response.result.message).to.equal('There is no such meal category');
+            done();
+        });
+    });
+
+    it('should remove an item', done => {
+        server.inject({
+            method: 'DELETE',
+            url: '/api/v0/items/' + item._id,
+            headers: {
+                'Authorization' : tokens[0]
+            }
+        }, response => {
+            expect(response.statusCode).to.equal(200);
+            done();
+        });
+    });
+
     it('should remove meal category', done => {
         server.inject({
             method: 'DELETE',

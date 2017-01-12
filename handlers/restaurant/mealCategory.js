@@ -1,9 +1,7 @@
-const Boom = require('boom');
 const async = require('async');
 const mongoose = require('mongoose');
-const RestaurantModel = mongoose.model('Restaurant');
 const MealCategoryModel = mongoose.model('MealCategory');
-const Restaurant = require('../restaurant');
+const Restaurant = require('./restaurant');
 const handleResponse = require('../helpers').handleResponse;
 
 class MealCategory {
