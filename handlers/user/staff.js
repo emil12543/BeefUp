@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const User = require('./user');
 const UserModel = mongoose.model('User');
 const Restaurant = require('../restaurant').Restaurant;
-const memory = require('../../config/memory');
 const handleResponse = require('../helpers').handleResponse;
 const isStaff = require('./helpers').isStaff;
 

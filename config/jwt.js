@@ -1,9 +1,17 @@
 const config = require('./config');
-const memory = require('./memory');
 const async = require('async');
-const User = require('mongoose').model('User');
+const UserModel = require('mongoose').model('User');
 
-const validate = (decoded, request, callback) => memory.get(request.headers.authorization) ? callback(null, true) : callback(null, false);
+const validate = (decoded, request, callback) => {
+    UserModel.find({
+        'tokens.token': request.headers.authorization
+    }, (err, users) => {
+        if (err)
+            return callback(err);
+
+        return !!users ? callback(null, true) : callback(null, false);
+    });
+};
 
 module.exports = {
     key: config.secret,

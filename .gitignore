@@ -1,4 +1,5 @@
 .idea/
+BeefUp.iml
 node_modules/
 .env
 logs/

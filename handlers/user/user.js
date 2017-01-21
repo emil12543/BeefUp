@@ -2,7 +2,6 @@ const async = require('async');
 const auth = require('../../config/auth');
 const mongoose = require('mongoose');
 const UserModel = mongoose.model('User');
-const memory = require('../../config/memory');
 const handleResponse = require('../helpers').handleResponse;
 const verifyPassword = require('./helpers').verifyPassword;
 
@@ -91,7 +90,6 @@ class User {
                         if (err)
                             return callback(err);
 
-                        memory.add(token, user._id); // add the created jsonwebtoken to the in-memory db
                         return callback(null, user, token);
                     });
                 },
@@ -131,7 +129,6 @@ class User {
                         if (decoded._id != request.auth.credentials._id) // checks if the token that should be revoked is sign the with same id as the authorization token
                             return callback(new Error('Not authorized to revoke token'));
 
-                        memory.remove(request.payload.token); // removes the revoked token from the in-memory db
                         callback(null, decoded, request.payload.token);
                     });
                 },

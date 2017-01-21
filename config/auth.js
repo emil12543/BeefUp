@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const config = require('./config');
-const memory = require('./memory');
 const async = require('async');
 const User = require('mongoose').model('User');
 
@@ -35,14 +34,12 @@ exports.init = () => {
         (users, callback) => {
             users.map(user => {
                 user.tokens.map(token => {
-                    this.verify(token.token, (err, decoded) => {
+                    this.verify(token.token, err => {
                         if (err)
                             deleteToken(user, token.token, err => {
                                 if (err)
                                     return callback(err);
                             });
-                        else
-                            memory.add(token.token, user._id);
                     });
                 });
             });
