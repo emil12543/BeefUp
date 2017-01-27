@@ -62,6 +62,7 @@ const UserSchema = new Schema({
     },
     restaurant_id: {
         type: Schema.Types.ObjectId, // if the user is staff this field stores in which restaurant they work else it stores in which restaurant they are
+        ref: 'Restaurant',
         default: null
     }
 });

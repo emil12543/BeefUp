@@ -19,7 +19,8 @@ const ItemSchema = new Schema({
         default: false
     },
     mealcategory_id: {
-        type: Schema.Types.ObjectId // predefined in mealCategory
+        type: Schema.Types.ObjectId, // predefined in mealCategory
+        ref: 'MealCategory'
     },
     weight: {
         type: Number, // if it's a liquid => ml else gr
